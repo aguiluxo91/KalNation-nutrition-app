@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import http from "../services/recipes-services";
 
 
@@ -11,12 +11,17 @@ function RecipeDetails() {
 
     const params = useParams();
 
-    useEffect(() => {
+    const navigate = useNavigate();
 
+    useEffect(() => {
         async function fetchRecipe() {
             const { id } = params;
-            const recipe = await http.get(`/recipes/${id}/card?apiKey=${process.env.REACT_APP_API_KEY}`)
-            if (!isUnmounted) setState({ recipe })
+            try {
+                const recipe = await http.get(`/recipes/${id}/card?apiKey=${process.env.REACT_APP_API_KEY}`)
+                if (!isUnmounted) setState({ recipe })
+            } catch {
+                navigate('/recipes')
+            }
         }
         let isUnmounted = false;
 
@@ -31,7 +36,7 @@ function RecipeDetails() {
     return (
         <>
             <h1 className="font-bold text-2xl my-3">Recipe details:</h1>
-            <img src={recipe.url} alt="recipe" className="shadow-lg p-2 mb-4"/>
+            <img src={recipe.url} alt="recipe" className="shadow-lg p-2 mb-4 w-full"/>
         </>
     );
 }
